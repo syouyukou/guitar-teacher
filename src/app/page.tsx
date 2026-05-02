@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { CURRICULUM } from "@/lib/curriculum";
 import LessonCard from "@/components/LessonCard";
 import ChatPanel from "@/components/ChatPanel";
 import { useProgress } from "@/lib/use-progress";
+import { Headphones, ChevronRight } from "lucide-react";
 
 export default function Home() {
   const { completedLessons } = useProgress();
@@ -42,6 +44,24 @@ export default function Home() {
             />
           </div>
         </div>
+
+        <Link
+          href="/listen"
+          className="flex items-center justify-between gap-4 mb-8 p-4 rounded-xl bg-gradient-to-r from-orange-500/15 to-amber-600/10 border border-orange-500/30 hover:border-orange-400/50 transition-colors group"
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center flex-shrink-0">
+              <Headphones className="text-orange-400" size={20} />
+            </div>
+            <div className="min-w-0">
+              <h2 className="text-sm font-semibold text-white">吉他手賞析專區</h2>
+              <p className="text-xs text-gray-400 truncate sm:whitespace-normal">
+                入門怎麼聽、聽什麼，附維基、搖滾名人堂與 YouTube 搜尋連結
+              </p>
+            </div>
+          </div>
+          <ChevronRight className="text-gray-500 group-hover:text-orange-400 flex-shrink-0" size={18} />
+        </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Curriculum */}

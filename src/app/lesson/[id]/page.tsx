@@ -81,13 +81,21 @@ function LessonView({ lesson }: { lesson: Lesson }) {
   return (
     <div className="min-h-screen bg-gray-950 text-white">
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1 text-gray-400 hover:text-white text-sm mb-6 transition-colors"
-        >
-          <ArrowLeft size={15} />
-          返回課程列表
-        </Link>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-6">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1 text-gray-400 hover:text-white text-sm transition-colors"
+          >
+            <ArrowLeft size={15} />
+            返回課程列表
+          </Link>
+          <Link
+            href="/listen"
+            className="inline-flex items-center gap-1 text-gray-500 hover:text-orange-400 text-sm transition-colors"
+          >
+            吉他手賞析專區
+          </Link>
+        </div>
 
         <div className="flex items-start justify-between gap-4 mb-6">
           <div>

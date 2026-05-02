@@ -1,6 +1,6 @@
 "use client";
 
-import { getLessonHandout } from "@/lib/lesson-handouts";
+import { getLessonHandout, SOURCE_VERIFICATION_BLURB } from "@/lib/lesson-handouts";
 import { HandoutFigure } from "@/components/handout-figures";
 import { BookMarked, ImageIcon, Library } from "lucide-react";
 import { useState } from "react";
@@ -87,9 +87,12 @@ export default function LessonHandout({ lessonId }: { lessonId: string }) {
           <Library size={16} className="text-orange-400" />
           <h3 className="text-sm font-semibold text-gray-200">參考與資料來源</h3>
         </div>
+        <p className="text-xs text-gray-500 leading-relaxed mb-4 border-l-2 border-amber-500/50 pl-3">
+          {SOURCE_VERIFICATION_BLURB}
+        </p>
         <ul className="space-y-3 text-sm text-gray-400">
           {handout.sources.map((s) => (
-            <li key={s.title} className="leading-relaxed">
+            <li key={s.url ?? s.title} className="leading-relaxed">
               {s.url ? (
                 <a
                   href={s.url}

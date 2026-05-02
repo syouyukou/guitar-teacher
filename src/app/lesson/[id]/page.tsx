@@ -67,10 +67,10 @@ function LessonView({ lesson }: { lesson: Lesson }) {
     saveNote(lesson.id, note);
   }
 
-  const levelColors = {
-    beginner: "text-green-400 bg-green-400/10",
-    intermediate: "text-yellow-400 bg-yellow-400/10",
-    advanced: "text-red-400 bg-red-400/10",
+  const levelChip = {
+    beginner: "bg-success/15 text-success ring-success/25",
+    intermediate: "bg-amber-500/12 text-amber-200 ring-amber-400/25",
+    advanced: "bg-danger/15 text-danger ring-danger/25",
   };
   const levelLabels = { beginner: "初學", intermediate: "進階", advanced: "高階" };
 
@@ -79,49 +79,65 @@ function LessonView({ lesson }: { lesson: Lesson }) {
 學習主題：${lesson.topics.join("、")}`;
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-6">
+    <div className="text-foreground">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+        <div className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm">
           <Link
             href="/"
-            className="inline-flex items-center gap-1 text-gray-400 hover:text-white text-sm transition-colors"
+            className="inline-flex min-h-10 items-center gap-1.5 rounded-lg px-2 text-muted-foreground transition-colors duration-200 hover:text-primary"
           >
-            <ArrowLeft size={15} />
+            <ArrowLeft size={15} strokeWidth={2.25} aria-hidden />
             返回課程列表
           </Link>
+          <span className="hidden text-border sm:inline" aria-hidden>
+            ·
+          </span>
           <Link
             href="/listen"
-            className="inline-flex items-center gap-1 text-gray-500 hover:text-orange-400 text-sm transition-colors"
+            className="inline-flex min-h-10 items-center gap-1.5 rounded-lg px-2 text-muted-foreground transition-colors duration-200 hover:text-primary"
           >
             吉他手賞析專區
           </Link>
         </div>
 
-        <div className="flex items-start justify-between gap-4 mb-6">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-gray-400 text-sm">第 {currentIndex + 1} 課</span>
-              <span className={`text-xs px-2 py-0.5 rounded-full ${levelColors[lesson.level]}`}>
+        <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0 flex-1">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                第 {currentIndex + 1} 課
+              </span>
+              <span
+                className={`rounded-md px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide ring-1 ${levelChip[lesson.level]}`}
+              >
                 {levelLabels[lesson.level]}
               </span>
             </div>
-            <h1 className="text-2xl font-bold">{lesson.title}</h1>
-            <p className="text-gray-400 text-sm mt-1">{lesson.description}</p>
+            <h1 className="text-2xl font-bold tracking-tight text-card-foreground sm:text-3xl">
+              {lesson.title}
+            </h1>
+            <p className="mt-3 max-w-2xl text-sm leading-[1.7] text-muted-foreground sm:text-base">
+              {lesson.description}
+            </p>
           </div>
           <button
+            type="button"
             onClick={toggleComplete}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all flex-shrink-0 ${
+            className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold transition-[background-color,box-shadow,color] duration-200 ease-out ring-1 ${
               completed
-                ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
-                : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                ? "bg-success/15 text-success ring-success/35 hover:bg-success/23"
+                : "surface-inset text-card-foreground ring-border hover:bg-muted/85"
             }`}
           >
-            {completed ? <CheckCircle2 size={16} /> : <Circle size={16} />}
+            {completed ? <CheckCircle2 size={18} strokeWidth={2.25} /> : <Circle size={18} />}
             {completed ? "已完成" : "標記完成"}
           </button>
         </div>
 
-        <div className="flex gap-1 mb-6 bg-gray-900 p-1 rounded-xl w-fit">
+        <div
+          className="surface-inset mb-8 inline-flex flex-wrap gap-1 rounded-[var(--radius)] p-1.5 ring-1 ring-border/70"
+          role="tablist"
+          aria-label="課程分頁"
+        >
           {(
             [
               { id: "learn" as Tab, label: "學習內容", icon: BookOpen },
@@ -132,97 +148,126 @@ function LessonView({ lesson }: { lesson: Lesson }) {
           ).map(({ id: tabId, label, icon: Icon }) => (
             <button
               key={tabId}
+              id={`tab-${tabId}`}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === tabId}
+              aria-controls={`panel-${tabId}`}
               onClick={() => setActiveTab(tabId)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`flex min-h-11 items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-semibold transition-[background-color,color,box-shadow] duration-200 ease-out sm:px-4 ${
                 activeTab === tabId
-                  ? "bg-orange-500 text-white"
-                  : "text-gray-400 hover:text-white"
+                  ? "bg-primary text-primary-foreground shadow-[var(--shadow-soft)]"
+                  : "text-muted-foreground hover:bg-muted/55 hover:text-foreground"
               }`}
             >
-              <Icon size={14} />
+              <Icon size={15} strokeWidth={activeTab === tabId ? 2.25 : 2} />
               {label}
             </button>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            {activeTab === "handout" && <LessonHandout lessonId={lesson.id} />}
+            {activeTab === "handout" && (
+              <div role="tabpanel" id="panel-handout" aria-labelledby="tab-handout">
+                <LessonHandout lessonId={lesson.id} />
+              </div>
+            )}
 
             {activeTab === "learn" && (
-              <div className="space-y-6">
-                <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-3">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <h2 className="text-sm font-semibold text-gray-300">指法與和弦圖</h2>
+              <div className="space-y-6" role="tabpanel" id="panel-learn" aria-labelledby="tab-learn">
+                <div className="surface-glass space-y-3 rounded-[var(--radius)] p-5 sm:p-6">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <h2 className="text-sm font-semibold text-card-foreground">指法與和弦圖</h2>
                     <button
                       type="button"
                       onClick={() => setActiveTab("handout")}
-                      className="text-xs text-orange-400 hover:text-orange-300 text-left sm:text-right"
+                      className="text-left text-xs font-medium text-primary hover:underline sm:text-right"
                     >
                       完整講義、來源與生圖提示 →
                     </button>
                   </div>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     圖為教學示意；細節請搭配「講義與配圖」或影片校正。
                   </p>
                   <HandoutFigure lessonId={lesson.id} />
                 </div>
 
-                <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-                  <h2 className="text-sm font-semibold text-gray-300 mb-4">本課學習主題</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="surface-glass rounded-[var(--radius)] p-5 sm:p-6">
+                  <h2 className="mb-4 text-sm font-semibold text-card-foreground">本課學習主題</h2>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                     {lesson.topics.map((topic) => (
-                      <div key={topic} className="flex items-center gap-2 bg-gray-800 rounded-lg px-3 py-2">
-                        <span className="text-orange-400 text-xs">▸</span>
-                        <span className="text-gray-200 text-sm">{topic}</span>
+                      <div
+                        key={topic}
+                        className="surface-inset flex items-center gap-2 rounded-xl px-3.5 py-2.5 ring-1 ring-border/50"
+                      >
+                        <ChevronRight
+                          size={16}
+                          className="shrink-0 text-primary"
+                          strokeWidth={2.25}
+                          aria-hidden
+                        />
+                        <span className="text-sm text-card-foreground">{topic}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-                  <h2 className="text-sm font-semibold text-gray-300 mb-3">我的練習筆記</h2>
+                <div className="surface-glass rounded-[var(--radius)] p-5 sm:p-6">
+                  <h2 className="mb-3 text-sm font-semibold text-card-foreground">我的練習筆記</h2>
                   <textarea
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                     onBlur={handleNoteBlur}
                     placeholder="記錄練習心得、需要注意的地方、困難點..."
-                    className="w-full h-32 bg-gray-800 text-gray-200 text-sm rounded-lg p-3 outline-none focus:ring-1 focus:ring-orange-500 placeholder-gray-500 resize-none"
+                    className="surface-inset min-h-32 w-full resize-none rounded-xl p-3 text-sm text-card-foreground outline-none ring-1 ring-border/60 placeholder:text-muted-foreground focus:ring-2 focus:ring-ring"
                   />
-                  <p className="text-xs text-gray-600 mt-1">離開輸入框時自動儲存</p>
+                  <p className="mt-2 text-xs text-muted-foreground">離開輸入框時自動儲存</p>
                 </div>
               </div>
             )}
 
             {activeTab === "videos" && (
-              <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-                <h2 className="text-sm font-semibold text-gray-300 mb-4">搜尋教學影片與資源</h2>
+              <div
+                className="surface-glass rounded-[var(--radius)] p-5 sm:p-6"
+                role="tabpanel"
+                id="panel-videos"
+                aria-labelledby="tab-videos"
+              >
+                <h2 className="mb-4 text-sm font-semibold text-card-foreground">搜尋教學影片與資源</h2>
                 <VideoSearch defaultQuery={lesson.youtubeSearch} youtubeTopic={lesson.youtubeSearch} />
               </div>
             )}
 
             {activeTab === "chat" && (
-              <div className="h-[500px]">
+              <div
+                className="surface-glass h-[500px] overflow-hidden rounded-[var(--radius)]"
+                role="tabpanel"
+                id="panel-chat"
+                aria-labelledby="tab-chat"
+              >
                 <ChatPanel lessonContext={lessonContext} />
               </div>
             )}
           </div>
 
           {(activeTab === "learn" || activeTab === "handout") && (
-            <div className="hidden lg:block h-[500px]">
-              <ChatPanel lessonContext={lessonContext} />
+            <div className="hidden h-[500px] lg:block">
+              <div className="surface-glass h-full overflow-hidden rounded-[var(--radius)]">
+                <ChatPanel lessonContext={lessonContext} />
+              </div>
             </div>
           )}
         </div>
 
-        <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-800">
+        <div className="mt-10 flex flex-col gap-4 border-t border-border/80 pt-8 sm:flex-row sm:items-center sm:justify-between">
           {prevLesson ? (
             <Link
               href={`/lesson/${prevLesson.id}`}
-              className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
+              className="group flex min-h-11 items-center gap-2 rounded-lg px-1 text-sm text-muted-foreground transition-colors duration-200 hover:text-primary motion-safe:transition-transform motion-safe:group-hover:-translate-x-0.5"
             >
-              <ChevronLeft size={16} />
-              <span>上一課：{prevLesson.title}</span>
+              <ChevronLeft size={18} aria-hidden className="shrink-0" />
+              <span className="min-w-0 truncate">上一課：{prevLesson.title}</span>
             </Link>
           ) : (
             <div />
@@ -230,10 +275,10 @@ function LessonView({ lesson }: { lesson: Lesson }) {
           {nextLesson ? (
             <Link
               href={`/lesson/${nextLesson.id}`}
-              className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
+              className="group flex min-h-11 items-center justify-end gap-2 rounded-lg px-1 text-right text-sm text-muted-foreground transition-colors duration-200 hover:text-primary sm:text-left motion-safe:transition-transform motion-safe:group-hover:translate-x-0.5"
             >
-              <span>下一課：{nextLesson.title}</span>
-              <ChevronRight size={16} />
+              <span className="min-w-0 truncate">下一課：{nextLesson.title}</span>
+              <ChevronRight size={18} aria-hidden className="shrink-0" />
             </Link>
           ) : (
             <div />

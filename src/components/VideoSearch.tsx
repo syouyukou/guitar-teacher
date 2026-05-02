@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, ExternalLink, PlayCircle } from "lucide-react";
+import { Search, ExternalLink, PlayCircle, ChevronRight } from "lucide-react";
 
 type ScrapeResult = {
   title: string;
@@ -83,16 +83,16 @@ export default function VideoSearch({ defaultQuery = "", youtubeTopic }: Props) 
         const label = line.replace(url, "").replace(/•\s*/, "").replace(/\s*—\s*$/, "").trim();
         return (
           <div key={i} className="flex items-start gap-2 py-1">
-            <span className="text-orange-400 mt-0.5">▸</span>
+            <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={2.25} aria-hidden />
             <div>
-              {label && <span className="text-gray-200 text-sm">{label}</span>}
+              {label && <span className="text-sm text-card-foreground">{label}</span>}
               <a
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-xs text-orange-400 hover:text-orange-300 mt-0.5"
+                className="mt-0.5 flex items-center gap-1 text-xs font-medium text-primary underline-offset-4 hover:underline"
               >
-                <ExternalLink size={11} />
+                <ExternalLink size={11} aria-hidden />
                 {url.length > 60 ? url.slice(0, 60) + "..." : url}
               </a>
             </div>
@@ -100,7 +100,11 @@ export default function VideoSearch({ defaultQuery = "", youtubeTopic }: Props) 
         );
       }
       if (line.trim()) {
-        return <p key={i} className="text-gray-400 text-xs py-0.5">{line.replace(/^•\s*/, "")}</p>;
+        return (
+          <p key={i} className="py-0.5 text-xs text-muted-foreground">
+            {line.replace(/^•\s*/, "")}
+          </p>
+        );
       }
       return null;
     });
@@ -113,17 +117,17 @@ export default function VideoSearch({ defaultQuery = "", youtubeTopic }: Props) 
   return (
     <div className="space-y-4">
       {youtubeHref && (
-        <div className="bg-gray-800/80 border border-gray-700 rounded-lg p-4">
-          <p className="text-xs font-medium text-gray-400 mb-2">本課推薦起手</p>
+        <div className="surface-inset rounded-xl p-4 ring-1 ring-primary/20">
+          <p className="mb-2 text-xs font-semibold text-muted-foreground">本課推薦起手</p>
           <a
             href={youtubeHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm text-orange-400 hover:text-orange-300 transition-colors"
+            className="inline-flex min-h-10 w-full max-w-full items-center gap-2 rounded-lg py-1 text-sm font-medium text-primary transition-colors duration-200 hover:brightness-110 sm:inline-flex sm:w-auto"
           >
-            <PlayCircle size={16} className="text-red-500 shrink-0" />
+            <PlayCircle size={18} className="shrink-0 text-red-500" aria-hidden />
             <span className="min-w-0">在 YouTube 搜尋：{youtubeTopic}</span>
-            <ExternalLink size={14} className="shrink-0" />
+            <ExternalLink size={14} className="shrink-0 opacity-70" aria-hidden />
           </a>
         </div>
       )}
@@ -132,34 +136,35 @@ export default function VideoSearch({ defaultQuery = "", youtubeTopic }: Props) 
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && search()}
-          placeholder="搜尋吉他教學影片或課程..."
-          className="flex-1 bg-gray-800 text-white text-sm rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-orange-500 placeholder-gray-500"
+          placeholder="搜尋吉他教學影片或課程…"
+          className="surface-inset min-h-11 flex-1 rounded-xl px-3 py-2.5 text-sm text-card-foreground outline-none ring-1 ring-border/70 transition-shadow duration-200 placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
         />
         <button
+          type="button"
           onClick={() => search()}
           disabled={loading}
-          className="bg-orange-500 hover:bg-orange-400 disabled:opacity-40 text-white rounded-lg px-4 py-2 text-sm transition-colors flex items-center gap-1"
+          className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-soft)] transition-[filter,opacity,box-shadow] duration-200 hover:brightness-110 disabled:opacity-40"
         >
-          <Search size={14} />
+          <Search size={15} strokeWidth={2.25} aria-hidden />
           搜尋
         </button>
       </div>
 
       {loading && (
-        <div className="text-center text-gray-500 text-sm py-4 animate-pulse">
-          正在搜尋教學資源...
+        <div className="animate-pulse py-4 text-center text-sm text-muted-foreground">
+          正在搜尋教學資源…
         </div>
       )}
 
       {!loading && searched && results.length === 0 && (
-        <p className="text-gray-500 text-sm text-center py-4">找不到相關資源，請換個關鍵字試試。</p>
+        <p className="py-4 text-center text-sm text-muted-foreground">找不到相關資源，請換個關鍵字試試。</p>
       )}
 
       {results.map((r, i) => (
-        <div key={i} className="bg-gray-900 rounded-xl p-4 border border-gray-800">
-          <div className="flex items-center gap-2 mb-3">
-            <PlayCircle size={16} className="text-red-500" />
-            <h3 className="text-white text-sm font-semibold">{r.title}</h3>
+        <div key={i} className="surface-glass rounded-[var(--radius)] p-4 shadow-[var(--shadow-soft)] sm:p-5">
+          <div className="mb-3 flex items-center gap-2">
+            <PlayCircle size={18} className="shrink-0 text-red-500" aria-hidden />
+            <h3 className="text-sm font-semibold text-card-foreground">{r.title}</h3>
           </div>
           <div className="space-y-1">{parseLinks(r.content)}</div>
         </div>

@@ -10,10 +10,10 @@ type Props = {
   index: number;
 };
 
-const levelColors = {
-  beginner: "text-green-400 bg-green-400/10",
-  intermediate: "text-yellow-400 bg-yellow-400/10",
-  advanced: "text-red-400 bg-red-400/10",
+const levelChip = {
+  beginner: "bg-success/15 text-success ring-success/25",
+  intermediate: "bg-amber-500/12 text-amber-200 ring-amber-400/25",
+  advanced: "bg-danger/15 text-danger ring-danger/25",
 };
 
 const levelLabels = {
@@ -24,29 +24,42 @@ const levelLabels = {
 
 export default function LessonCard({ lesson, completed, index }: Props) {
   return (
-    <Link href={`/lesson/${lesson.id}`}>
-      <div className="group flex items-center gap-4 bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-orange-500/50 rounded-xl p-4 transition-all cursor-pointer">
-        <div className="w-8 h-8 rounded-full bg-gray-800 group-hover:bg-gray-700 flex items-center justify-center text-sm font-bold text-gray-400 flex-shrink-0">
+    <Link href={`/lesson/${lesson.id}`} className="block rounded-[var(--radius)]">
+      <article
+        className="group surface-glass flex min-h-[4.25rem] cursor-pointer items-center gap-4 rounded-[var(--radius)] p-4 transition-[transform,box-shadow] duration-200 ease-out motion-safe:active:scale-[0.99] sm:p-5 sm:pr-6 motion-safe:hover:shadow-[var(--shadow-soft-lg)] motion-safe:hover:ring-1 motion-safe:hover:ring-primary/25"
+        role="article"
+      >
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted/90 text-sm font-bold tabular-nums text-muted-foreground ring-1 ring-border/60 transition group-hover:bg-primary/10 group-hover:text-primary group-hover:ring-primary/25">
           {index + 1}
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="text-white text-sm font-semibold truncate">{lesson.title}</h3>
-            <span className={`text-xs px-2 py-0.5 rounded-full flex-shrink-0 ${levelColors[lesson.level]}`}>
+        <div className="min-w-0 flex-1">
+          <div className="mb-1 flex flex-wrap items-center gap-2">
+            <h3 className="truncate text-sm font-semibold text-card-foreground sm:text-[0.9375rem]">
+              {lesson.title}
+            </h3>
+            <span
+              className={`shrink-0 rounded-md px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide ring-1 ${levelChip[lesson.level]}`}
+            >
               {levelLabels[lesson.level]}
             </span>
           </div>
-          <p className="text-gray-400 text-xs truncate">{lesson.description}</p>
+          <p className="line-clamp-2 text-xs leading-snug text-muted-foreground sm:line-clamp-1">
+            {lesson.description}
+          </p>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex shrink-0 items-center gap-2">
           {completed ? (
-            <CheckCircle2 size={20} className="text-green-400" />
+            <CheckCircle2 size={22} className="text-success" strokeWidth={2.25} />
           ) : (
-            <Circle size={20} className="text-gray-600" />
+            <Circle size={22} className="text-border" strokeWidth={2} />
           )}
-          <ChevronRight size={16} className="text-gray-500 group-hover:text-orange-400 transition-colors" />
+          <ChevronRight
+            size={18}
+            className="text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-primary"
+            strokeWidth={2}
+          />
         </div>
-      </div>
+      </article>
     </Link>
   );
 }

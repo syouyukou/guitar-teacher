@@ -10,9 +10,9 @@ function FigureFrame({
   children: ReactNode;
 }) {
   return (
-    <figure className="rounded-xl border border-gray-800 bg-gray-900/80 overflow-hidden">
-      <div className="p-4 flex justify-center items-center min-h-[180px]">{children}</div>
-      <figcaption className="px-4 py-2 text-xs text-gray-500 border-t border-gray-800 bg-gray-950/50">
+    <figure className="surface-glass overflow-hidden rounded-2xl ring-1 ring-border/80">
+      <div className="flex min-h-[180px] items-center justify-center p-4">{children}</div>
+      <figcaption className="border-t border-border/70 bg-muted/30 px-4 py-2.5 text-xs text-muted-foreground backdrop-blur-sm">
         {caption}
       </figcaption>
     </figure>

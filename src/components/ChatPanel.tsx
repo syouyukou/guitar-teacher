@@ -3,7 +3,7 @@
 import { useChat } from "@ai-sdk/react";
 import { TextStreamChatTransport } from "ai";
 import { useEffect, useRef, useState } from "react";
-import { Send, Bot, User } from "lucide-react";
+import { Bot, Guitar, Send, User } from "lucide-react";
 
 type Props = {
   lessonContext?: string;
@@ -54,47 +54,52 @@ export default function ChatPanel({ lessonContext }: Props) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-gray-950 rounded-xl border border-gray-800">
-      <div className="px-4 py-3 border-b border-gray-800 flex items-center gap-2">
-        <Bot size={18} className="text-orange-400" />
-        <span className="font-semibold text-white text-sm">吉他師傅 AI</span>
-        <span className="ml-auto text-xs text-gray-500">即時問答</span>
+    <div className="flex h-full flex-col border-0 bg-transparent">
+      <div className="flex items-center gap-2 border-b border-border/80 bg-muted/25 px-4 py-3 backdrop-blur-sm">
+        <Bot size={18} className="text-primary" strokeWidth={2.25} />
+        <span className="text-sm font-semibold text-card-foreground">吉他師傅 AI</span>
+        <span className="ml-auto text-xs text-muted-foreground">即時問答</span>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
         {messages.length === 0 && (
-          <div className="text-center text-gray-500 text-sm mt-8 space-y-2">
-            <p className="text-2xl">🎸</p>
-            <p>嗨！我是你的吉他師傅。</p>
-            <p>有任何關於電吉他的問題，盡管問我！</p>
+          <div className="mt-8 space-y-3 text-center text-sm text-muted-foreground">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/12 ring-1 ring-primary/25">
+              <Guitar className="h-8 w-8 text-primary" strokeWidth={2} aria-hidden />
+            </div>
+            <p className="font-semibold text-card-foreground">嗨，我是吉他師傅。</p>
+            <p className="max-w-[16rem] mx-auto leading-relaxed">有任何電吉他的問題都可以問我。</p>
           </div>
         )}
         {messages.map((m) => {
-          const textContent = m.parts
-            ?.filter((p) => p.type === "text")
-            .map((p) => (p as { type: "text"; text: string }).text)
-            .join("") ?? "";
+          const textContent =
+            m.parts
+              ?.filter((p) => p.type === "text")
+              .map((p) => (p as { type: "text"; text: string }).text)
+              .join("") ?? "";
           return (
             <div
               key={m.id}
               className={`flex gap-2 ${m.role === "user" ? "flex-row-reverse" : "flex-row"}`}
             >
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  m.role === "user" ? "bg-orange-500" : "bg-gray-700"
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ring-1 ${
+                  m.role === "user"
+                    ? "bg-primary text-primary-foreground ring-primary/30"
+                    : "bg-muted/90 text-primary ring-border"
                 }`}
               >
                 {m.role === "user" ? (
-                  <User size={14} className="text-white" />
+                  <User size={14} strokeWidth={2.25} />
                 ) : (
-                  <Bot size={14} className="text-orange-400" />
+                  <Bot size={14} strokeWidth={2.25} />
                 )}
               </div>
               <div
-                className={`max-w-[85%] rounded-xl px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap ${
+                className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap shadow-sm ${
                   m.role === "user"
-                    ? "bg-orange-500 text-white"
-                    : "bg-gray-800 text-gray-100"
+                    ? "bg-primary text-primary-foreground"
+                    : "surface-inset text-card-foreground ring-1 ring-border/60"
                 }`}
               >
                 {textContent}
@@ -104,31 +109,34 @@ export default function ChatPanel({ lessonContext }: Props) {
         })}
         {isLoading && (
           <div className="flex gap-2">
-            <div className="w-7 h-7 rounded-full bg-gray-700 flex items-center justify-center">
-              <Bot size={14} className="text-orange-400" />
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-muted/90 ring-1 ring-border">
+              <Bot size={14} className="text-primary" />
             </div>
-            <div className="bg-gray-800 rounded-xl px-3 py-2 text-sm text-gray-400">
-              <span className="animate-pulse">思考中...</span>
+            <div className="surface-inset rounded-2xl px-3.5 py-2.5 text-sm text-muted-foreground ring-1 ring-border/60">
+              <span className="animate-pulse">思考中…</span>
             </div>
           </div>
         )}
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={handleSubmit} className="p-3 border-t border-gray-800 flex gap-2">
+      <form
+        onSubmit={handleSubmit}
+        className="flex gap-2 border-t border-border/80 bg-muted/20 p-3 backdrop-blur-sm"
+      >
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="問吉他師傅任何問題..."
-          className="flex-1 bg-gray-800 text-white text-sm rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-orange-500 placeholder-gray-500"
+          placeholder="問吉他師傅任何問題…"
+          className="surface-inset flex-1 rounded-xl px-3 py-2.5 text-sm text-card-foreground outline-none ring-1 ring-border/70 placeholder:text-muted-foreground focus:ring-2 focus:ring-ring"
           disabled={isLoading}
         />
         <button
           type="submit"
           disabled={isLoading || !input.trim()}
-          className="bg-orange-500 hover:bg-orange-400 disabled:opacity-40 text-white rounded-lg px-3 py-2 transition-colors"
+          className="flex shrink-0 items-center justify-center rounded-xl bg-primary px-3.5 py-2.5 text-primary-foreground shadow-md shadow-primary/25 transition hover:brightness-110 disabled:opacity-40"
         >
-          <Send size={16} />
+          <Send size={18} strokeWidth={2.25} />
         </button>
       </form>
     </div>

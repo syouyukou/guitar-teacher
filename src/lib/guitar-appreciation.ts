@@ -2,6 +2,30 @@
  * 吉他手賞析：入門提點與推薦人物（連結以百科／機構／搜尋為主，影片交由 YouTube 搜尋結果，較不易失效）。
  */
 
+/** 賞析曲風分類（同一樂手可出現在多個曲風，各自有經典參考順序） */
+export type AppreciationGenreId = "blues" | "classic-rock" | "hard-rock" | "alternative" | "roots";
+
+export type AppreciationGenre = {
+  id: AppreciationGenreId;
+  label: string;
+  /** 一句話說明這個篩選在聽什麼 */
+  blurb: string;
+};
+
+export const APPRECIATION_GENRES: AppreciationGenre[] = [
+  { id: "blues", label: "藍調", blurb: "從單音顫音到樂句呼吸，聽「少即是多」。" },
+  { id: "classic-rock", label: "經典搖滾／前衛", blurb: "長篇編曲、音色層次與旋律性 solo。" },
+  { id: "hard-rock", label: "硬式搖滾／炫技", blurb: "高增益、點弦與速度段落的聽覺刺激。" },
+  { id: "alternative", label: "另類搖滾", blurb: "效果器聲響設計與 riff 驅動的節奏。" },
+  { id: "roots", label: "福音與先驅", blurb: "電吉他語彙成形期，福音與節奏掃弦。" },
+];
+
+export type GenrePlacement = {
+  genreId: AppreciationGenreId;
+  /** 數字愈小代表在該曲風脈絡下愈具指標性／宜優先認識 */
+  classicOrder: number;
+};
+
 export type AppreciationLink = {
   label: string;
   href: string;
@@ -25,6 +49,8 @@ export type FeaturedGuitarist = {
   name: string;
   /** 一句話風格定位 */
   tagline: string;
+  /** 所屬曲風與在該曲風下的經典參考排序（classicOrder 愈小愈上面） */
+  genrePlacements: GenrePlacement[];
   /** 代表性事蹟／里程碑（入門脈絡） */
   milestones: string[];
   /** 經典或入門推薦曲目 */
@@ -57,14 +83,57 @@ export const APPRECIATION_INTRO = {
       body: "現場版多了互動與風險，錄音室版通常更精緻。對照同一首歌兩種版本，最容易發現樂手的習慣與偏好。",
     },
   ],
-  note: "以下人物僅作為入門賞析起點，非排名。建議從你覺得好聽的一段開始，對照本站的技巧詞彙（推弦、悶音、點弦等）會更有感。",
+  note: "依曲風瀏覽時，由上而下是在該風格脈絡下的經典參考順序，方便建立聽覺地圖；仍建議從任何一個讓你起雞皮疙瘩的片段開始，對照技巧詞彙（推弦、悶音、點弦等）會更有感。",
 };
+
+/** 專欄小故事：用不同切入點認識音樂（非樂手條目） */
+export type AppreciationColumnStory = {
+  id: string;
+  title: string;
+  /** 切入點標籤，例如「編曲」「歷史」 */
+  angle: string;
+  body: string;
+};
+
+export const APPRECIATION_COLUMN_STORIES: AppreciationColumnStory[] = [
+  {
+    id: "studio-vs-stage",
+    title: "同一首歌，戴耳機與坐觀眾席",
+    angle: "空間與製作",
+    body: "錄音室版常把吉他貼得近，你能聽見指甲、悶音與音箱細節；現場版多了場館空氣與人群，頻率會被「磨」得溫暖。試著切換兩種版本只聽前三十秒，你會發現樂手取捨完全不同。",
+  },
+  {
+    id: "hidden-guitar",
+    title: "吉他不一定在正中央",
+    angle: "編曲角色",
+    body: "有些金曲裡吉他躲在合成器、弦樂或節奏組後面，負責「讓整體晃起來」而不是一直 solo。練習辨識：先把其他樂器想像關小聲，再慢慢加回來，會聽見吉他在推還是在讓。",
+  },
+  {
+    id: "one-lick-history",
+    title: "五秒 riff 背後的半世紀",
+    angle: "歷史聽覺",
+    body: "許多聽起來很「現代」的句型，其實從藍調、福音掃弦到英倫入侵一路疊加而來。聽的時候不必背年表，只要注意到：同樣的雙音或推弦，在不同年代音色與節拍上的「鬆緊」不一樣，那就是風格在說話。",
+  },
+  {
+    id: "feel-vs-grid",
+    title: "節拍器正直，但身體會搖",
+    angle: "律動",
+    body: "藍調與搖滾常帶一點拖或趕的「人味」，和合成器完全貼格不一樣。你可以先對著腳打基本拍，再注意吉他手是在拍點上敲下去，還是稍微晚一點落弦——那往往就是情緒轉折所在。",
+  },
+];
+
+export const DEFAULT_APPRECIATION_GENRE: AppreciationGenreId = "blues";
 
 export const FEATURED_GUITARISTS: FeaturedGuitarist[] = [
   {
     id: "hendrix",
     name: "Jimi Hendrix",
     tagline: "六〇年代末搖滾與藍調融合、音箱回授與即興句式。",
+    genrePlacements: [
+      { genreId: "blues", classicOrder: 3 },
+      { genreId: "classic-rock", classicOrder: 1 },
+      { genreId: "hard-rock", classicOrder: 2 },
+    ],
     portrait: {
       src: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Jimi_Hendrix_%281967%29_%28cropped%29.jpg/500px-Jimi_Hendrix_%281967%29_%28cropped%29.jpg",
       alt: "Jimi Hendrix 1967 年演出留影（半身特写）",
@@ -112,6 +181,10 @@ export const FEATURED_GUITARISTS: FeaturedGuitarist[] = [
     id: "bb-king",
     name: "B.B. King",
     tagline: "藍調吉他「一個音說一個故事」的顫音與句法。",
+    genrePlacements: [
+      { genreId: "blues", classicOrder: 1 },
+      { genreId: "roots", classicOrder: 2 },
+    ],
     portrait: {
       src: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Bbking.jpg/500px-Bbking.jpg",
       alt: "B.B. King 手持吉他「Lucille」演出",
@@ -154,6 +227,7 @@ export const FEATURED_GUITARISTS: FeaturedGuitarist[] = [
     id: "gilmour",
     name: "David Gilmour",
     tagline: "空間感、bend 與延音，旋律性搖滾 solo 的經典範本。",
+    genrePlacements: [{ genreId: "classic-rock", classicOrder: 2 }],
     portrait: {
       src: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/DGilmourRAH111024_%2821_of_63%29_%28cropped%29.jpg/500px-DGilmourRAH111024_%2821_of_63%29_%28cropped%29.jpg",
       alt: "David Gilmour 舞台上演奏（裁剪）",
@@ -196,6 +270,7 @@ export const FEATURED_GUITARISTS: FeaturedGuitarist[] = [
     id: "van-halen",
     name: "Eddie Van Halen",
     tagline: "點弦、琶音與高速樂句；八〇年代搖滾吉他技術革新代表。",
+    genrePlacements: [{ genreId: "hard-rock", classicOrder: 1 }],
     portrait: {
       src: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Eddie_Van_Halen_at_the_New_Haven_Coliseum.jpg/500px-Eddie_Van_Halen_at_the_New_Haven_Coliseum.jpg",
       alt: "Eddie Van Halen 舞台上演奏",
@@ -238,6 +313,7 @@ export const FEATURED_GUITARISTS: FeaturedGuitarist[] = [
     id: "srv",
     name: "Stevie Ray Vaughan",
     tagline: "德州藍調搖滾，爆發力與動態、雙音與節奏和弦並重。",
+    genrePlacements: [{ genreId: "blues", classicOrder: 2 }],
     portrait: {
       src: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Stevie_Ray_Vaughan_Live_1983.jpg/500px-Stevie_Ray_Vaughan_Live_1983.jpg",
       alt: "Stevie Ray Vaughan 1983 年現場",
@@ -279,6 +355,10 @@ export const FEATURED_GUITARISTS: FeaturedGuitarist[] = [
     id: "tharpe",
     name: "Sister Rosetta Tharpe",
     tagline: "福音與早期電吉他，影響搖滾與藍調吉他語彙的先驅之一。",
+    genrePlacements: [
+      { genreId: "roots", classicOrder: 1 },
+      { genreId: "blues", classicOrder: 4 },
+    ],
     portrait: {
       src: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Sister_Rosetta_Tharpe_%281938_publicity_photo_-_headshot%29.jpg/500px-Sister_Rosetta_Tharpe_%281938_publicity_photo_-_headshot%29.jpg",
       alt: "Sister Rosetta Tharpe 1938 年宣傳照",
@@ -320,6 +400,7 @@ export const FEATURED_GUITARISTS: FeaturedGuitarist[] = [
     id: "morello",
     name: "Tom Morello",
     tagline: "另類金屬與嘻哈元素，效果器與非傳統技巧製造「非吉他聲響」。",
+    genrePlacements: [{ genreId: "alternative", classicOrder: 1 }],
     portrait: {
       src: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Tom_Morello.jpg/500px-Tom_Morello.jpg",
       alt: "Tom Morello 演出留影",
@@ -358,3 +439,13 @@ export const FEATURED_GUITARISTS: FeaturedGuitarist[] = [
     ],
   },
 ];
+
+export function guitaristsForGenre(genreId: AppreciationGenreId): FeaturedGuitarist[] {
+  return FEATURED_GUITARISTS.filter((g) => g.genrePlacements.some((p) => p.genreId === genreId))
+    .map((g) => {
+      const placement = g.genrePlacements.find((p) => p.genreId === genreId)!;
+      return { g, order: placement.classicOrder };
+    })
+    .sort((a, b) => a.order - b.order)
+    .map(({ g }) => g);
+}

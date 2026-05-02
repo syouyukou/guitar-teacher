@@ -22,6 +22,14 @@ const levelLabels = {
   advanced: "高階",
 };
 
+const yearChip = {
+  1: "bg-sky-500/15 text-sky-200 ring-sky-400/30",
+  2: "bg-emerald-500/15 text-emerald-200 ring-emerald-400/30",
+  3: "bg-amber-500/12 text-amber-200 ring-amber-400/25",
+  4: "bg-violet-500/15 text-violet-200 ring-violet-400/30",
+  5: "bg-rose-500/15 text-rose-200 ring-rose-400/30",
+} as const;
+
 export default function LessonCard({ lesson, completed, index }: Props) {
   return (
     <Link href={`/lesson/${lesson.id}`} className="block rounded-[var(--radius)]">
@@ -37,6 +45,11 @@ export default function LessonCard({ lesson, completed, index }: Props) {
             <h3 className="truncate text-sm font-semibold text-card-foreground sm:text-[0.9375rem]">
               {lesson.title}
             </h3>
+            <span
+              className={`shrink-0 rounded-md px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide ring-1 ${yearChip[lesson.planYear]}`}
+            >
+              第{lesson.planYear}年
+            </span>
             <span
               className={`shrink-0 rounded-md px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide ring-1 ${levelChip[lesson.level]}`}
             >

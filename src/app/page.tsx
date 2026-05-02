@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CURRICULUM } from "@/lib/curriculum";
+import { CURRICULUM, CURRICULUM_PACE, getLessonsByPlanYear, PLAN_YEARS } from "@/lib/curriculum";
 import LessonCard from "@/components/LessonCard";
 import ChatPanel from "@/components/ChatPanel";
 import { useProgress } from "@/lib/use-progress";
@@ -16,7 +16,7 @@ import {
   BookOpen,
 } from "lucide-react";
 
-const FEATURED_IDS = ["lesson-01", "lesson-05", "lesson-11"] as const;
+const FEATURED_IDS = ["lesson-01", "lesson-07", "lesson-40"] as const;
 
 const CLAY_PREVIEW_ROT = ["clay--coral", "clay--mint", "clay--sky"] as const;
 
@@ -31,15 +31,13 @@ export default function Home() {
     (typeof CURRICULUM)[0]
   >[];
 
-  const levels = ["beginner", "intermediate", "advanced"] as const;
   const levelLabels = { beginner: "初學者", intermediate: "進階", advanced: "高階" };
-  const levelDesc = {
-    beginner: "從持琴、調音到和弦與節奏",
-    intermediate: "強力和弦、五聲與表情技巧",
-    advanced: "即興與高階演奏技術",
-  };
+  const yearMeta = Object.fromEntries(CURRICULUM_PACE.years.map((y) => [y.year, y])) as Record<
+    1 | 2 | 3 | 4 | 5,
+    (typeof CURRICULUM_PACE.years)[0]
+  >;
 
-  const demoFilled = 7;
+  const demoFilled = Math.min(12, total);
 
   return (
     <div className="landing-playful text-foreground">
@@ -92,7 +90,7 @@ export default function Home() {
               <div className="mx-auto mt-10 flex max-w-xl flex-wrap justify-center gap-3">
                 <div className="clay clay--coral flex items-center gap-2 px-4 py-2.5 text-sm font-semibold">
                   <Target size={17} aria-hidden />
-                  {total} 堂結構課程
+                  五年 · {total} 單元
                 </div>
                 <div className="clay clay--mint flex items-center gap-2 px-4 py-2.5 text-sm font-semibold">
                   <Sparkles size={17} aria-hidden />
@@ -134,8 +132,13 @@ export default function Home() {
                     href={`/lesson/${lesson.id}`}
                     className={`clay ${CLAY_PREVIEW_ROT[i] ?? "clay--lilac"} clay-hover block p-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background`}
                   >
-                    <span className="mb-2 inline-flex rounded-full bg-[oklch(0.99_0.02_0/0.28)] px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ring-1 ring-[oklch(0_0_0/0.08)]">
-                      {levelLabels[lesson.level]}
+                    <span className="mb-2 inline-flex flex-wrap gap-1.5">
+                      <span className="inline-flex rounded-full bg-[oklch(0.99_0.02_0/0.28)] px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ring-1 ring-[oklch(0_0_0/0.08)]">
+                        第 {lesson.planYear} 年
+                      </span>
+                      <span className="inline-flex rounded-full bg-[oklch(0.99_0.02_0/0.28)] px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ring-1 ring-[oklch(0_0_0/0.08)]">
+                        {levelLabels[lesson.level]}
+                      </span>
                     </span>
                     <h3 className="mt-2 text-base font-bold leading-snug">{lesson.title}</h3>
                     <p className="clay-muted mt-2 line-clamp-3 text-xs leading-relaxed sm:text-sm">{lesson.description}</p>
@@ -164,9 +167,9 @@ export default function Home() {
                   </div>
                 </div>
                 <p className="mb-4 text-sm leading-relaxed opacity-85">
-                  每完成一堂可標記完成；進度條會反映目前已讀單元比例。
+                  對照下方「你的真實進度」：每完成一單元可標記完成，長條即反映目前已消化比例。
                 </p>
-                <div className="mb-3 flex flex-wrap gap-2" role="list" aria-label="示範：12 課完成格">
+                <div className="mb-3 flex flex-wrap gap-2" role="list" aria-label={`示範：${total} 單元完成格`}>
                   {Array.from({ length: total }, (_, idx) => {
                     const on = idx < demoFilled;
                     return (
@@ -261,19 +264,48 @@ export default function Home() {
 
             {/* Full curriculum */}
             <div id="courses" className="scroll-mt-24">
+              <div className="surface-glass mb-6 rounded-[var(--radius)] p-5 sm:p-6">
+                <h2 className="text-sm font-semibold text-card-foreground">課程要練多久？</h2>
+                <p className="mt-2 text-sm leading-[1.75] text-muted-foreground">{CURRICULUM_PACE.summary}</p>
+                <div className="mt-5 border-t border-border/70 pt-5">
+                  <h3 className="text-sm font-semibold text-card-foreground">這份順序有沒有「驗證過」？老師通常怎麼排？</h3>
+                  <p className="mt-2 text-sm leading-[1.75] text-muted-foreground">{CURRICULUM_PACE.pedagogy.disclaimer}</p>
+                  <ul className="mt-3 list-inside list-disc space-y-2 text-sm leading-[1.75] text-muted-foreground">
+                    {CURRICULUM_PACE.pedagogy.howTeachersOftenSequence.map((line) => (
+                      <li key={line}>{line}</li>
+                    ))}
+                  </ul>
+                  <p className="mt-3 text-sm leading-[1.75] text-muted-foreground">{CURRICULUM_PACE.pedagogy.individualVariation}</p>
+                  <ul className="mt-3 flex flex-wrap gap-3">
+                    {CURRICULUM_PACE.pedagogy.references.map((ref) => (
+                      <li key={ref.href}>
+                        <a
+                          href={ref.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+                        >
+                          {ref.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Guitar className="h-5 w-5 text-primary/80" strokeWidth={2} aria-hidden />
-                <span className="text-sm font-medium">完整課程路線</span>
+                <span className="text-sm font-medium">五年課程路線（依年分列）</span>
               </div>
-              {levels.map((level) => {
-                const lessons = CURRICULUM.filter((l) => l.level === level);
+              {PLAN_YEARS.map((year) => {
+                const lessons = getLessonsByPlanYear(year);
+                const meta = yearMeta[year];
                 return (
-                  <section key={level} className="mt-8 scroll-mt-24">
+                  <section key={year} id={`year-${year}`} className="mt-8 scroll-mt-24">
                     <div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
                       <h2 className="text-lg font-bold tracking-tight text-card-foreground">
-                        {levelLabels[level]}
+                        {meta.title}（第 {year} 年）
                       </h2>
-                      <span className="text-sm text-muted-foreground">{levelDesc[level]}</span>
+                      <span className="text-sm text-muted-foreground">{meta.focus}</span>
                     </div>
                     <div className="space-y-3">
                       {lessons.map((lesson) => (

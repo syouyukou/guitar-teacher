@@ -19,9 +19,12 @@ import {
   MessageSquare,
   ChevronLeft,
   ChevronRight,
+  Music2,
+  ExternalLink,
 } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getProgress } from "@/lib/progress";
+import { getLessonHomeworkVideos } from "@/lib/lesson-homework-videos";
 
 type Tab = "learn" | "handout" | "videos" | "chat";
 
@@ -58,6 +61,8 @@ function LessonView({ lesson }: { lesson: Lesson }) {
   const prevLesson = currentIndex > 0 ? CURRICULUM[currentIndex - 1] : null;
   const nextLesson = currentIndex < CURRICULUM.length - 1 ? CURRICULUM[currentIndex + 1] : null;
 
+  const { homework, videoResources } = getLessonHomeworkVideos(lesson);
+
   function toggleComplete() {
     if (completed) markIncomplete(lesson.id);
     else markComplete(lesson.id);
@@ -76,7 +81,10 @@ function LessonView({ lesson }: { lesson: Lesson }) {
 
   const lessonContext = `課程名稱：${lesson.title}
 課程說明：${lesson.description}
-學習主題：${lesson.topics.join("、")}`;
+學習主題：${lesson.topics.join("、")}
+五年課程第 ${lesson.planYear} 年；全課程序號第 ${currentIndex + 1}／${CURRICULUM.length} 單元。
+建議練習曲：${lesson.practiceSong.title}（${lesson.practiceSong.artist}）${lesson.practiceSong.hint ? ` — ${lesson.practiceSong.hint}` : ""}
+課後作業要點：${homework.join("；")}`;
 
   return (
     <div className="text-foreground">
@@ -104,7 +112,13 @@ function LessonView({ lesson }: { lesson: Lesson }) {
           <div className="min-w-0 flex-1">
             <div className="mb-2 flex flex-wrap items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                第 {currentIndex + 1} 課
+                五年課程 · 第 {lesson.planYear} 年
+              </span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground" aria-hidden>
+                ·
+              </span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                第 {currentIndex + 1}／{CURRICULUM.length} 單元
               </span>
               <span
                 className={`rounded-md px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide ring-1 ${levelChip[lesson.level]}`}
@@ -211,6 +225,77 @@ function LessonView({ lesson }: { lesson: Lesson }) {
                       </div>
                     ))}
                   </div>
+                </div>
+
+                <div className="surface-glass rounded-[var(--radius)] p-5 sm:p-6">
+                  <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-card-foreground">
+                    <Music2 size={18} className="text-primary" aria-hidden />
+                    建議練習曲（對照本課技巧）
+                  </h2>
+                  <p className="text-base font-semibold text-card-foreground">
+                    {lesson.practiceSong.title}
+                    <span className="mt-1 block text-sm font-normal text-muted-foreground">
+                      {lesson.practiceSong.artist}
+                    </span>
+                  </p>
+                  {lesson.practiceSong.hint ? (
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{lesson.practiceSong.hint}</p>
+                  ) : null}
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {lesson.practiceSong.links.map((link) => (
+                      <a
+                        key={link.href}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-border/80 bg-muted/40 px-3 py-2 text-xs font-semibold text-primary transition-[border-color,background-color] duration-200 hover:border-primary/40 hover:bg-primary/10"
+                      >
+                        {link.label}
+                        <ExternalLink size={12} className="opacity-80" aria-hidden />
+                      </a>
+                    ))}
+                  </div>
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    連結以搜尋結果為主，可依版權與習慣自選教學影片或譜例；版權歸原著作權人。
+                  </p>
+                </div>
+
+                <div className="surface-glass rounded-[var(--radius)] p-5 sm:p-6">
+                  <h2 className="mb-3 text-sm font-semibold text-card-foreground">課後作業</h2>
+                  <p className="mb-3 text-xs text-muted-foreground">
+                    以下參考常見「每週帶回家練習」形式（如社大、音樂教室課綱）；可依時間刪減，但建議至少完成一項並簡單記錄。
+                  </p>
+                  <ul className="list-inside list-disc space-y-2 text-sm leading-relaxed text-card-foreground">
+                    {homework.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="surface-glass rounded-[var(--radius)] p-5 sm:p-6">
+                  <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-card-foreground">
+                    <Video size={18} className="text-primary" aria-hidden />
+                    建議觀看（中文內容優先）
+                  </h2>
+                  <p className="mb-3 text-xs text-muted-foreground">
+                    連結為搜尋結果頁，方便以中文關鍵字挑選講解；版權與教學品質請自行判斷，亦可搭配本課「影片搜尋」分頁。
+                  </p>
+                  <ul className="space-y-3">
+                    {videoResources.map((v) => (
+                      <li key={v.href}>
+                        <a
+                          href={v.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex flex-wrap items-center gap-1.5 text-sm font-medium text-primary underline-offset-4 hover:underline"
+                        >
+                          {v.title}
+                          <ExternalLink size={12} className="shrink-0 opacity-80" aria-hidden />
+                        </a>
+                        {v.note ? <p className="mt-1 text-xs text-muted-foreground">{v.note}</p> : null}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
                 <div className="surface-glass rounded-[var(--radius)] p-5 sm:p-6">
